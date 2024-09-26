@@ -1,0 +1,185 @@
+openapi: 3.0.0
+info:
+  title: Bibliotheksverwaltung API
+  version: 1.0.0
+paths:
+  /books:
+    get:
+      summary: "Liste aller Bücher"
+      responses:
+        '200':
+          description: "Erfolgreich"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: "Ein neues Buch hinzufügen"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: "Buch erstellt"
+  
+  /books/{id}:
+    get:
+      summary: "Ein Buch nach ID abrufen"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Erfolgreich"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+    put:
+      summary: "Ein Buch aktualisieren"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '200':
+          description: "Buch aktualisiert"
+    delete:
+      summary: "Ein Buch löschen"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: "Buch gelöscht"
+  
+  /authors:
+    get:
+      summary: "Liste aller Autoren"
+      responses:
+        '200':
+          description: "Erfolgreich"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+    post:
+      summary: "Einen neuen Autor hinzufügen"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '201':
+          description: "Autor erstellt"
+  
+  /authors/{id}:
+    get:
+      summary: "Ein Autor nach ID abrufen"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Erfolgreich"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+    put:
+      summary: "Einen Autor aktualisieren"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '200':
+          description: "Autor aktualisiert"
+  
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        publicationYear:
+          type: integer
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+    
+    BookInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        publicationYear:
+          type: integer
+        authors:
+          type: array
+          items:
+            type: string
+    
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        birthdate:
+          type: string
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+    
+    AuthorInput:
+      type: object
+      properties:
+        name:
+          type: string
+        birthdate:
+          type: string

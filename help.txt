@@ -1,0 +1,38 @@
+Start Project:
+
+uvicorn main:app --host 0.0.0.0 --port 8443 --ssl-keyfile=key.pem --ssl-certfile=cert.pem
+
+
+Reload systemd Daemon:
+
+bash
+Copy code
+sudo systemctl daemon-reload
+Start the FastAPI Service:
+
+bash
+Copy code
+sudo systemctl start fastapi
+Enable the Service to Start on Boot:
+
+bash
+Copy code
+sudo systemctl enable fastapi
+Check Service Status:
+
+bash
+Copy code
+sudo systemctl status fastapi
+Expected Output:
+
+yaml
+Copy code
+● fastapi.service - FastAPI Application
+   Loaded: loaded (/etc/systemd/system/fastapi.service; enabled; vendor preset: enabled)
+   Active: active (running) since ...
+   ...
+Viewing FastAPI Logs with systemd:
+
+bash
+Copy code
+sudo journalctl -u fastapi -f
