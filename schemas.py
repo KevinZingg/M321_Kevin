@@ -1,14 +1,21 @@
 # schemas.py
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
-class UserCreate(BaseModel):
+class UserBase(BaseModel):
     username: str
+    email: EmailStr
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+class UserCreate(UserBase):
     password: str
 
-class UserResponse(BaseModel):
-    id: int
-    username: str
+class UserResponse(UserBase):
+    user_id: int
+    date_created: datetime
+    last_login: Optional[datetime] = None
 
     class Config:
         from_attributes = True  # Updated from orm_mode
@@ -18,4 +25,4 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: str | None = None  # Now compatible with Python 3.10
+    username: Optional[str] = None

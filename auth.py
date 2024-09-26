@@ -4,19 +4,19 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from typing import Optional
 
-# To get a string like this run:
-# openssl rand -hex 32
-SECRET_KEY = "your-secret-key-should-be-long-and-random"  # Replace with your secret key
+# Configuration variables
+SECRET_KEY = "your_secret_key"  # Replace with your actual secret key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+# Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password):
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

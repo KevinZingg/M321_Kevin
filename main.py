@@ -4,8 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import Optional
-from datetime import timedelta  # Add this line
-from jose import JWTError        # Add this line
+from datetime import timedelta
+from jose import JWTError
 
 from database import SessionLocal, engine, Base
 import models, schemas, auth
@@ -43,7 +43,7 @@ def authenticate_user(db: Session, username: str, password: str):
     user = get_user(db, username)
     if not user:
         return False
-    if not auth.verify_password(password, user.hashed_password):
+    if not auth.verify_password(password, user.password_hash):
         return False
     return user
 
@@ -73,8 +73,17 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = get_user(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
+    db_email = db.query(models.User).filter(models.User.email == user.email).first()
+    if db_email:
+        raise HTTPException(status_code=400, detail="Email already registered")
     hashed_password = auth.get_password_hash(user.password)
-    new_user = models.User(username=user.username, hashed_password=hashed_password)
+    new_user = models.User(
+        username=user.username,
+        password_hash=hashed_password,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -94,6 +103,9 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     access_token = auth.create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+    # Update last_login
+    user.last_login = func.now()
+    db.commit()
     return {"access_token": access_token, "token_type": "bearer"}
 
 # Protected route example
