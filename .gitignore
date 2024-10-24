@@ -1,2 +1,5 @@
 ./__pychache__
 ./venv
+venv
+.venv
+.env

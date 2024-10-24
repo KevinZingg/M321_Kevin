@@ -15,6 +15,11 @@ from database import SessionLocal, engine, Base
 import auth
 import models
 import schemas
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
