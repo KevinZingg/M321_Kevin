@@ -3,6 +3,42 @@ Start Project:
 uvicorn main:app --host 0.0.0.0 --port 8443 --ssl-keyfile=key.pem --ssl-certfile=cert.pem
 
 
+
+CURL Commands:
+
+
+
+
+zingg@Kevins-MBP ~ % curl -k -X 'POST' \
+  'https://localhost:8443/register' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "username": "24okt",
+  "email": "24okt@example.com",
+  "first_name": "24okt",
+  "last_name": "24okt",
+  "password": "24okt"
+}'
+
+{"username":"24okt","email":"24okt@example.com","first_name":"24okt","last_name":"24okt","user_id":3,"date_created":"2024-10-24T06:53:21","last_login":null}%    
+
+
+zingg@Kevins-MBP ~ % curl -k -X 'POST' \
+  'https://localhost:8443/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'username=24okt&password=24okt'
+
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNG9rdCIsImV4cCI6MTcyOTc1NTIyMH0.QrI1c__UqFhua4PndX-VOqmIo-HzOrBnCPM8Y5bjiG8","token_type":"bearer"}%   
+
+
+
+zingg@Kevins-MBP ~ % curl -k -X 'GET' \
+  'https://localhost:8443/users/me' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNG9rdCIsImV4cCI6MTcyOTc1NTIyMH0.QrI1c__UqFhua4PndX-VOqmIo-HzOrBnCPM8Y5bjiG8'
+
+{"username":"24okt","email":"24okt@example.com","first_name":"24okt","last_name":"24okt","user_id":3,"date_created":"2024-10-24T06:53:21","last_login":"2024-10-24T07:03:40"}%                       
+
 Reload systemd Daemon:
 
 bash
@@ -36,3 +72,20 @@ Viewing FastAPI Logs with systemd:
 bash
 Copy code
 sudo journalctl -u fastapi -f
+
+
+
+
+
+CURL for new User:
+
+zingg@Kevins-MacBook-Pro ~ % curl -k -X POST https://10.3.32.24:8443/register \                  
+     -H "Content-Type: application/json" \
+     -d '{
+           "username": "Kemper",
+           "email": "kemper@example.com",
+           "password": "Pa$$w0rd",
+           "first_name": "Stefan",
+           "last_name": "Kemper"
+         }'
+

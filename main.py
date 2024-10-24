@@ -1,19 +1,24 @@
 # main.py
-from fastapi import FastAPI, Depends, HTTPException, status, Request
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from sqlalchemy.orm import Session
-from typing import Optional
+import logging
 from datetime import timedelta
+
+from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from jose import JWTError
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from database import SessionLocal, engine, Base
-import models, schemas, auth
+import auth
+import models
+import schemas
 
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
-# Create all database tables
-Base.metadata.create_all(bind=engine)
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -26,17 +31,26 @@ templates = Jinja2Templates(directory="templates")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
 # Dependency to get DB session
 def get_db():
-    db = SessionLocal()
     try:
+        db = SessionLocal()
         yield db
+    except OperationalError:
+        logger.error("Database connection failed.")
+        raise HTTPException(status_code=503, detail="Database is unavailable")
     finally:
-        db.close()
+        try:
+            db.close()
+        except:
+            pass
+
 
 # Utility function to get user by username
 def get_user(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
+
 
 # Authenticate user
 def authenticate_user(db: Session, username: str, password: str):
@@ -46,6 +60,7 @@ def authenticate_user(db: Session, username: str, password: str):
     if not auth.verify_password(password, user.password_hash):
         return False
     return user
+
 
 # Get current user dependency
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -67,6 +82,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+
 # Registration endpoint
 @app.post("/register", response_model=schemas.UserResponse)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -85,9 +101,14 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         last_name=user.last_name
     )
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.commit()
+        db.refresh(new_user)
+    except OperationalError:
+        logger.error("Failed to commit new user to the database.")
+        raise HTTPException(status_code=503, detail="Database is unavailable")
     return new_user
+
 
 # Token endpoint
 @app.post("/token", response_model=schemas.Token)
@@ -105,17 +126,45 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     )
     # Update last_login
     user.last_login = func.now()
-    db.commit()
+    try:
+        db.commit()
+    except OperationalError:
+        logger.error("Failed to update last_login due to database unavailability.")
+        raise HTTPException(status_code=503, detail="Database is unavailable")
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 # Protected route example
 @app.get("/users/me", response_model=schemas.UserResponse)
 def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    return {"status": "ok"}
+
+
 # Home route
 @app.get("/")
 def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Optionally, you can add a route to create users via HTML forms
+
+# Startup event to create tables
+@app.on_event("startup")
+def startup_event():
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully.")
+    except OperationalError:
+        logger.error("Could not connect to the database. Tables were not created.")
+
+
+# Optional: Global exception handler for database errors
+@app.exception_handler(OperationalError)
+async def db_exception_handler(request: Request, exc: OperationalError):
+    logger.error(f"Database error: {exc}")
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "Database is unavailable"},
+    )

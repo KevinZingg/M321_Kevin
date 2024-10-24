@@ -4,11 +4,95 @@
 
 <head>
     <title>FastAPI Authentication</title>
+    <style>
+        /* Remove default margin and padding to ensure the image spans the full width */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        /* Container to hold the image and the overlay text */
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            /* Makes the container full viewport height */
+            overflow: hidden;
+        }
+
+        /* Full-width GIF styling */
+        .full-width-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Ensures the image covers the container without distortion */
+        }
+
+        /* Overlay text styling */
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            /* Position the text slightly above the center */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            /* Text color */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background for better readability */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.5em;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* Responsive adjustments (optional) */
+        @media (max-width: 600px) {
+            .overlay-text {
+                font-size: 1.2em;
+                padding: 8px 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Welcome to the FastAPI Authentication Example</h1>
-    <p>Use the API endpoints to register and login.</p>
+    <div class="image-container">
+        <!-- Full-width GIF/Image -->
+        <img id="random-gif" src="" alt="Full Width GIF" class="full-width-gif">
+
+        <!-- Overlay Text -->
+        <div class="overlay-text">
+            Visit "/docs"
+        </div>
+    </div>
+
+    <script>
+        // List of image URLs
+        const imageUrls = [
+            "https://i.pinimg.com/originals/36/ea/b1/36eab1e0ccc8bdb4dcfaece035205741.gif",
+            "https://i.pinimg.com/originals/86/04/39/8604396c72be1d48c016f909a6fff764.gif",
+            "https://i.pinimg.com/originals/ed/ba/02/edba02290dd897bd740647beb82f6e0b.gif",
+            "https://i.pinimg.com/originals/c7/85/42/c7854274d51eeaeedda63283ce185f99.gif",
+            "https://i.pinimg.com/originals/63/b8/08/63b808ba0404bb8f7176aea2ae21e225.gif",
+            "https://i.pinimg.com/originals/1c/5b/f9/1c5bf9f25065038579a2b5a55b657ae7.gif",
+            "https://i.pinimg.com/originals/e2/70/e3/e270e352730da06ddfaed7c30aec0d47.gif"
+        ];
+
+        // Function to select a random image from the list
+        function getRandomImage() {
+            const randomIndex = Math.floor(Math.random() * imageUrls.length);
+            return imageUrls[randomIndex];
+        }
+
+        // Set the src attribute of the img tag to the randomly selected image
+        document.addEventListener("DOMContentLoaded", function () {
+            const imgElement = document.getElementById("random-gif");
+            imgElement.src = getRandomImage();
+        });
+    </script>
 </body>
 
 </html>
