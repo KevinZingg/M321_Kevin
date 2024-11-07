@@ -41,7 +41,7 @@ Die Tests wurden mit `pytest` erstellt und mit dem folgenden Command kann man si
 
 ```sh
 pytest
-
+```
 
 ## Test Results
 
