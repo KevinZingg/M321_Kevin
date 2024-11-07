@@ -1,19 +1,21 @@
-# Test Report
+# Testbericht
 
-## Overview
+## Übersicht
 
-This document serves as a test protocol summary for the backend of the project. The goal is to ensure the application meets quality standards through automated unit tests and integration tests. The following sections provide details on the test environment, tools used, testing outcomes, and any relevant warnings or deprecated features noted during testing.
+Dieses Dokument dient als Zusammenfassung des Testprotokolls für das Backend des Projekts. Ziel ist es, sicherzustellen, dass die Anwendung die Qualitätsstandards durch automatisierte Unit-Tests und Integrationstests erfüllt. Die folgenden Abschnitte geben Details zur Testumgebung, den verwendeten Tools, den Testergebnissen und allen relevanten Warnungen oder veralteten Funktionen, die während der Tests festgestellt wurden.
 
-## Test Environment
+## Testumgebung
 
-- **Operating System:** Linux (Ubuntu)
-- **Python Version:** Python 3.10.15
-- **Virtual Environment:** venv
-- **Test Framework:** Pytest 8.3.3
+- **Betriebssystem:** Linux (Ubuntu)
+- **Python-Version:** Python 3.10.15
+- **Virtuelle Umgebung:** venv
+- **Testframework:** Pytest 8.3.3
 - **Plugins:** anyio-4.4.0
-- **Database:** SQLite (for testing purposes)
+- **Datenbank:** SQLite (für Testzwecke)
 
-### Project Directory Structure
+### Projektverzeichnisstruktur
+
+
 
 /home/ubuntu/Documents/fastapi
 ├── README.md
@@ -35,7 +37,7 @@ This document serves as a test protocol summary for the backend of the project. 
 
 ## Test Execution Summary
 
-The tests were executed using `pytest` with the following command:
+Die Tests wurden mit `pytest` erstellt und mit dem folgenden Command kann man sie ausführen:
 
 ```sh
 pytest
@@ -50,7 +52,7 @@ pytest
 
 ### Detailed Test Warnings
 
-During the test run, the following warnings were noted:
+Die folgenden warnings wurden gefunden:
 
 1. **SQLAlchemy Deprecation Warning**: The `declarative_base()` function should be updated to `sqlalchemy.orm.declarative_base()`. This function has been deprecated since SQLAlchemy 2.0.
    - **File:** `database.py`, Line: 30
@@ -94,15 +96,3 @@ For complete documentation on warnings, please refer to [Pytest Warnings](https:
 ### Home Route
 
 - `test_home_route`: Verifies that the home page returns the correct `index.html`.
-
-## Test Protocol Quality Evaluation
-
-- **Screenshots**: (Screenshots can be included if needed to visually demonstrate the test results or steps.)
-- **Test Versions and Warnings**: The versions of Python, pytest, and plugins used in the testing environment have been documented.
-- **Conclusion**: The tests demonstrate good coverage for the user registration, login, protected routes, and health check functionalities. However, several warnings related to deprecated features should be addressed to ensure long-term maintainability of the project.
-
-## Suggestions for Improvement
-
-- **Deprecation Fixes**: Update the deprecated features in SQLAlchemy, Pydantic, and FastAPI to their latest versions.
-- **Test Coverage**: Consider expanding the test coverage to include edge cases and negative scenarios for all endpoints.
-- **Environment Versions**: It is recommended to include the output of `pip freeze` to capture the exact versions of all dependencies.
